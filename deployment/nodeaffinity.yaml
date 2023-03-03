@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: with-node-affinity
+spec:
+  affinity:
+    nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+                - matchExpressions:
+                  - key: beta.kubernetes.io/arch
+                    operator: In
+                    values:
+                    - amd64
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+                  matchExpressions:
+                  - key: disk-type
+                    operator: In
+                    values:
+                    - ssdd
+  containers:
+  - name: with-node-affinity
+    image: registry.aliyuncs.com/google_containers/pause:3.1

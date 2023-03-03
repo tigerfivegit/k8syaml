@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+data:
+  host: 10.5.10.116
+metadata:
+  name: test-config11
+  namespace: default
+

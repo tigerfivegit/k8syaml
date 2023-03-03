@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-deploy
+  name: nginx-deploy
+  namespace: tiger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-pod
+  template:
+    metadata:
+      labels:
+        app: nginx-pod
+    spec:
+      containers:
+      - image: nginx:1.14-alpine
+        imagePullPolicy: Always
+        name: nginx
+        ports:
+        - containerPort: 80
+          name: port
+          protocol: TCP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: tomcat-deploy
+  name: tomcat-deploy
+  namespace: tiger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tomcat-pod 
+  template:
+    metadata:
+      labels:
+        app: tomcat-pod
+    spec:
+      containers:
+      - image: docker.io/kubeguide/tomcat-app:v1
+        imagePullPolicy: Always
+        name: tomcat
+        ports:
+        - containerPort: 8080
+          name: port
+          protocol: TCP

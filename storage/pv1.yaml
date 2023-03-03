@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-1
+spec:
+  capacity:
+    storage: 1Gi                                    #存储空间大小
+  accessModes:                                      #访问模式
+  - ReadWriteMany                                   #多主机读写
+  persistentVolumeReclaimPolicy: Retain             #回收策略为保留
+  nfs:                                              #使用nfs存储类型
+    path: /data/nfs/nfs1                            #nfs共享路径
+    server: 192.168.18.132                          #nfs服务器地址

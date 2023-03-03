@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: redis-micro-deployment
+  name: redis-micro-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-micro-deployment
+  template:
+    metadata:
+      labels:
+        app: redis-micro-deployment
+    spec:
+      initContainers:
+      - name: init-redis
+        image: busybox:1.35
+        command: ['sh', '-c', 'mkdir -p /data/redis/log/;mkdir -p /data/redis/conf/;mkdir -p /data/redis/data/']
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data/redis/
+      containers:
+      - image: redis:5.0.5-alpine
+        name: redis
+        imagePullPolicy: IfNotPresent
+        command:
+        - sh
+        - -c
+        - "exec redis-server /data/redis/conf/redis-micro.conf"
+        volumeMounts:
+          - name: redis-config
+            mountPath: /data/redis/conf/
+          - name: redis-data
+            mountPath: /data/redis/
+      volumes:
+      - name: redis-config
+        configMap:
+          name: redis-micro-conf
+      - name: redis-data
+        persistentVolumeClaim:
+          claimName: redis-data

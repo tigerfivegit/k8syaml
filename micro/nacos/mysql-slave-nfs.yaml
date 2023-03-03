@@ -1,0 +1,62 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: mysql-slave-data
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "managed-nfs-storage"   #与nfs-StorageClass.yaml metadata.name保持一致
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-slave
+  labels:
+    name: mysql-slave
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: mysql-slave
+  template:
+    metadata:
+      labels:
+        name: mysql-slave
+    spec:
+      containers:
+      - name: slave
+        image: paderlol/nacos-mysql-slave:latest
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: mysql-slave-data
+          mountPath: /var/lib/mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "root"
+        - name: MYSQL_REPLICATION_USER
+          value: 'nacos_ru'
+        - name: MYSQL_REPLICATION_PASSWORD
+          value: 'nacos_ru'
+      # 设置PVC
+      volumes:
+      - name: mysql-slave-data
+        persistentVolumeClaim:
+          claimName: mysql-slave-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-slave
+  labels:
+    name: mysql-slave
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+  selector:
+    name: mysql-slave

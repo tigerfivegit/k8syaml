@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      name: webapp
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp
+        image: nginx:1.10
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: pod-ip
+          mountPath: /usr/share/nginx/html/
+      volumes:
+      - name: pod-ip
+        downwardAPI:
+          items:
+          - path: "index.html"
+            fieldRef:
+              fieldPath: metadata.name

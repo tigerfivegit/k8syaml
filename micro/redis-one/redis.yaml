@@ -1,0 +1,86 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis30-conf
+data:
+  redis30.conf: |
+        bind 0.0.0.0
+        port 6379
+        pidfile .pid
+        appendonly yes
+        cluster-config-file nodes-6379.conf
+        pidfile /data/redis/log/redis30.pid
+        cluster-config-file /data/redis/conf/redis30.conf
+        dir /data/redis/data/
+        logfile "/data/redis/log/redis30.log"
+        cluster-node-timeout 5000
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis30-app
+spec:
+  replicas: 1
+  serviceName: redis30-svc
+  selector:
+    matchLabels:
+      name: redis30
+  template:
+    metadata:
+      labels:
+        name: redis30
+    spec:
+      initContainers:
+      - name: init-redis
+        image: busybox:1.35
+        command: ['sh', '-c', 'mkdir -p /data/redis/log/;mkdir -p /data/redis/conf/;mkdir -p /data/redis/data/']
+        volumeMounts:
+        - name: data
+          mountPath: /data/redis/
+      containers:
+      - name: redis
+        image: redis:5.0.5-alpine
+        imagePullPolicy: IfNotPresent
+        command:
+        - sh
+        - -c
+        - "exec redis-server /data/redis/conf/redis30.conf"
+        ports:
+        - containerPort: 6379
+          name: redis
+          protocol: TCP
+        volumeMounts:
+        - name: redis-config
+          mountPath: /data/redis/conf/
+        - name: data
+          mountPath: /data/redis/
+      volumes:
+      - name: redis-config
+        configMap:
+          name: redis30-conf
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 5Gi
+      storageClassName: managed-nfs-storage
+---
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    name: redis30-svc
+  name: redis30-svc
+spec:
+  type: NodePort
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: 6379
+    nodePort: 30030
+  selector:
+    name: redis30

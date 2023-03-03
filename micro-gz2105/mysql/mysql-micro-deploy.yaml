@@ -1,0 +1,48 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: mysql-data
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "managed-nfs-storage2105"
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mysql-micro-deploy
+  name: mysql-micro-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-micro-deploy
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: mysql-micro-deploy
+    spec:
+      containers:
+      - image: mysql:5.7
+        name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: 'root'
+        volumeMounts:
+        - name: config-map
+          mountPath: /etc/mysql/conf.d
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: config-map
+        configMap:
+          name: mysql
+      - name: mysql-data
+        persistentVolumeClaim:
+          claimName: mysql-data

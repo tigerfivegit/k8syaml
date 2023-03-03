@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  name: mall-admin
+  #namespace: ms 
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      project: ms
+      app: mall-admin
+  template:
+    metadata:
+      labels:
+        project: ms 
+        app: mall-admin
+    spec:
+      imagePullSecrets:
+      - name: tiger-registry
+      containers:
+      - name: mall-admin
+        image: 192.168.18.132/library/mall-admin:2022-04-17-20-37-17
+        imagePullPolicy: Always
+        ports:
+          - protocol: TCP
+            containerPort: 8080
+        env:
+          - name: JAVA_OPTS
+            value: "-Xmx1g"
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 256Mi
+          limits:
+            cpu: 1
+            memory: 1Gi
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 10

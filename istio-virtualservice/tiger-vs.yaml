@@ -1,0 +1,18 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: tiger-virtual-svc
+spec:
+  hosts:
+  - web-svc
+  http:
+  - route:
+    - destination:
+        host: web-svc
+        subset: nginx
+      weight: 25
+    - destination:
+        host: web-svc
+        subnet: tomcat
+      weight: 75

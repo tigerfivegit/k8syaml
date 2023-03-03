@@ -1,0 +1,52 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: rabbitmq-data
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "managed-nfs-storage2105"
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq-micro
+  template:
+    metadata:
+      labels:
+        app: rabbitmq-micro
+    spec:
+      hostname: my-rabbit
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:3.8-management
+        imagePullPolicy: IfNotPresent
+        ports:
+          - name: rabbitmq-web
+            containerPort: 15672
+          - name: rabbitmq-app
+            containerPort: 5672
+        env:
+          - name: RABBITMQ_DEFAULT_VHOST
+            value: /
+          - name: RABBITMQ_DEFAULT_USER
+            value: mall
+          - name: RABBITMQ_DEFAULT_PASS
+            value: mall
+        volumeMounts:
+        - name: rabbitmq-data
+          mountPath: /var/lib/rabbitmq/
+      volumes:
+      - name: rabbitmq-data
+        persistentVolumeClaim:
+          claimName: rabbitmq-data

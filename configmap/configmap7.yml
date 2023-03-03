@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-config11
+  labels:
+    app: nginx-configmap
+spec:
+  containers:
+  - name: nginx-configmap2
+    image: nginx
+    imagePullPolicy: IfNotPresent
+    ports:
+    - containerPort: 80
+    volumeMounts:
+    - name: config-volume4
+      mountPath: "/tmp/config4/host"
+      subPath: host
+  volumes:
+  - name: config-volume4
+    configMap:
+      name: test-config11
+      items:
+      - key: host
+        path: host
+      - key: user
+        path: path/user

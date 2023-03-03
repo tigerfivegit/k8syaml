@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-1
+  #namespace: tiger
+spec:
+  accessModes:                      #设置访问模式
+  - ReadWriteMany                   #多节点可读可写
+  resources:                            #设置请求的PV容量
+    requests:
+      storage: 1Gi                  #设置容量为1G，`可以匹配到pv-1`

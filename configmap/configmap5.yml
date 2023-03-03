@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-configmap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-configmap
+  template:
+    metadata:
+      labels:
+        app: nginx-configmap
+    spec:
+      containers:
+      - name: nginx-configmap
+        image: nginx
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+        volumeMounts:     
+        - name: config-volume4
+          mountPath: /tmp/config4
+      volumes:
+      - name: config-volume4
+        configMap:
+          name: test-config3

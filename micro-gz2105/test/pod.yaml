@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cdh-master
+  labels:
+    role: cdh6.3
+spec:
+  containers:
+    - name: centos7-1
+      image: registry.cn-hangzhou.aliyuncs.com/dragon8512/centos7jdk8ssh:v1
+      ports:
+        - containerPort: 22
+          hostPort: 50022
+          protocol: TCP

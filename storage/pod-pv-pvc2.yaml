@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-pvc2
+spec:
+  containers:
+  - name: nginx-2
+    image: nginx:1.17.1
+    ports:
+    - containerPort: 80
+    volumeMounts:                                                               #定义持久卷挂载路径
+    - name: volume-1                                                    #指定pvc名称
+      mountPath: /usr/share/nginx/html/                  #指定pvc挂载到容器的路径        
+  volumes:                                                                              #定义持久卷信息
+    - name: volume-1                                                    #定义持久卷名称
+      persistentVolumeClaim:                                    #使用pvc类型
+        claimName: pvc-2                                                #指定使用的pvc名称
+        readOnly: false                                                 #关闭只读

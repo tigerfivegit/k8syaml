@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-micro-conf
+data:
+  enabled_plugins: |
+      [rabbitmq_management].
+  rabbitmq.conf: |
+     mqtt.default_user = guest
+     mqtt.default_pass = guest
+     mqtt.allow_anonymous = true
+     mqtt.vhost = /

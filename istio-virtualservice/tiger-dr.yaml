@@ -1,0 +1,13 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: tiger-dr
+spec:
+  host: web-svc
+  subsets:
+  - name: tomcat
+    labels:
+      app: tomcat
+  - name: nginx
+    labels:
+      app: nginx

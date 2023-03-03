@@ -1,0 +1,16 @@
+---
+kind: ConfigMap
+metadata:
+  name: mongodb-conf
+  namespace: default
+apiVersion: v1
+data:
+  mongod.conf: |-
+    dbpath=/mongo/data
+    logpath=/mongo/log/mongodb.log
+    pidfilepath=/mongo/key/master.pid
+    directoryperdb=true
+    logappend=true
+    bind_ip=0.0.0.0
+    port=27017
+---

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  name: mall-gateway
+  #namespace: ms 
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      project: ms
+      app: mall-gateway
+  template:
+    metadata:
+      labels:
+        project: ms 
+        app: mall-gateway
+    spec:
+      imagePullSecrets:
+      - name: tiger-registry
+      containers:
+      - name: mall-gateway
+        image: 192.168.18.132/micro/mall-gateway:2022-04-22-14-33-48
+        imagePullPolicy: Always
+        ports:
+          - protocol: TCP
+            containerPort: 8201
+        env:
+          - name: JAVA_OPTS
+            value: "-Xmx1g"
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 256Mi
+          limits:
+            cpu: 1
+            memory: 1Gi
+        readinessProbe:
+          tcpSocket:
+            port: 8201
+          initialDelaySeconds: 60
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 8201
+          initialDelaySeconds: 60
+          periodSeconds: 10

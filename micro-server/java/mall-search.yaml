@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  name: mall-search
+  #namespace: ms 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      project: ms
+      app: mall-search
+  template:
+    metadata:
+      labels:
+        project: ms 
+        app: mall-search
+    spec:
+      imagePullSecrets:
+      - name: tiger-registry
+      containers:
+      - name: mall-search
+        image: 192.168.18.132/micro/mall-search:2022-04-22-14-33-58
+        imagePullPolicy: Always
+        ports:
+          - protocol: TCP
+            containerPort: 8081
+        env:
+          - name: JAVA_OPTS
+            value: "-Xmx1g"
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 256Mi
+          limits:
+            cpu: 1
+            memory: 1Gi
+        readinessProbe:
+          tcpSocket:
+            port: 8081
+          initialDelaySeconds: 60
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 8081
+          initialDelaySeconds: 60
+          periodSeconds: 10

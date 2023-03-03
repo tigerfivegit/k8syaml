@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy-vs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: web
+      app: nginx
+  template:
+    metadata:
+      labels:
+        type: web
+        app: nginx
+    spec:
+      containers:
+      - image: nginx:1.14-alpine
+        imagePullPolicy: IfNotPresent
+        name: nginx
+        ports:
+        - containerPort: 80
+          name: port
+          protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat-deploy-vs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tomcat
+      type: web
+  template:
+    metadata:
+      labels:
+        app: tomcat
+        type: web
+    spec:
+      containers:
+      - image: docker.io/kubeguide/tomcat-app:v1
+        imagePullPolicy: IfNotPresent
+        name: tomcat
+        ports:
+        - containerPort: 8080
+          name: port
+          protocol: TCP
